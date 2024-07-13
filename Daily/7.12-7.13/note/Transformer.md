@@ -49,6 +49,16 @@ eg. 第一个 -> $PE_{1,2} = sin( 1/10000^{2*2/4})$
 
 #### （2）self -attention
 
+-> 更容易捕获句子中长距离的相互依赖
+
+1. embedding，输入单词转为词向量
+2. 根据嵌入向量利用矩阵乘法得到q、k、v三个向量
+3. 为每一个向量计算相关性：$q ⋅ k^T$
+4. 为了梯度的稳定，除以$\sqrt{d_k}$
+5. 进行softmax归一化得到权重系数
+6. 与 $v$ 点乘得到加权的每个输入向量的评分
+7. 相加之后得到最终的输出结果$z = \sum$
+
 ![](https://sevanthea7.oss-cn-beijing.aliyuncs.com/QGworks/202407121950189.png)
 
 eg.: $\alpha_{1,2} = q^1·k^2$
@@ -83,7 +93,9 @@ $q^{i,1}, q^{i,2}$
 
 #### 1.Masked-Attention
 
-把未知的数的$\alpha$ 设置成负无穷，让它们的影响最小
+把未知的数的 $\alpha$ 设置成负无穷，让它们的影响最小
+
+ ![](https://sevanthea7.oss-cn-beijing.aliyuncs.com/QGworks/202407131108377.png)
 
 #### 2.Cross-Attention
 
@@ -93,3 +105,4 @@ eg. 用 $q^1$ 进行查询
 
 
 
+#### 3.Stop Token
