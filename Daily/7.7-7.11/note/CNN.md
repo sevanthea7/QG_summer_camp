@@ -114,11 +114,11 @@ $H = - \frac{1}{N} \sum_{i=1}^{N}[o_i^*log(o_i) + (1 - o^*_i)log(1 - o^*_i)]$
 2. 载入权重后之训练最后几层参数
 3. 载入权重后在原网络上自己加一层全连接层，只训练自己加的这一层参数
 
-## 
+
 
 ## 2.Lenet
 
-![](https://sevanthea7.oss-cn-beijing.aliyuncs.com/QGworks/202407091432763.jpg)
+![](C:/Users/EC319/Desktop/202407091432763.jpg)
 
 **导入本地数据集**
 

@@ -65,9 +65,21 @@ eg.: $\alpha_{1,2} = q^1·k^2$
 
 $Q · K^T$ 得到一个 $a_{i，j}$ 组成的矩阵 -> $A$ 矩阵乘上 $V$ 矩阵 $( v_1, v_2, v_3, v_4 )$  得到 $b _n$ 
 
+**线性变换后**：查询、键和值向量的形状为 $(batch\_size,seq\_len,d_k×n\_heads)$
+
+**分割成多个头并调整维度后**：形状变为 $(batch\_size, n\_heads, seq\_len, d_k)$
+
+输入序列 X 的形状为 (1,3,4)(1, 3, 4)(1,3,4)（batch_size = 1, seq_len = 3, d_model = 4）。
+
+我们使用 2 个注意力头（n_heads = 2）。
+
+每个头的维度为 2（d_k = 2）。
+
 ##### Multi-head Self-attention
 
 $q^{i,1}, q^{i,2}$
+
+
 
 ##### Truncated Self-attention
 
@@ -77,7 +89,7 @@ $q^{i,1}, q^{i,2}$
 
 每经过一个层都要做一次add&norm的操作
 
-残差：add （residual）-> 经过self-attention得到的向量和原向量相加得到新的向量
+残差：add （residual）-> 经过self-attention得到的向量和原向量相加得到新的向量 -> 增强模型的表达能力，促进模型训练的稳定性和收敛速度
 
 ​			norm -> noramalization标准化
 
@@ -106,3 +118,4 @@ eg. 用 $q^1$ 进行查询
 
 
 #### 3.Stop Token
+
