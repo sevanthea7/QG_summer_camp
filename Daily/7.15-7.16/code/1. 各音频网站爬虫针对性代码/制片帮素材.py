@@ -36,10 +36,10 @@ for link in link_box:
             # 指定保存路径
             with open( f'../test/talk_sound{i}.mp3', 'wb') as file:
 
-                file.write(response_f.content)
-            print(f'MP3 file downloaded{i}')
+                file.write( response_f.content )
+            print( f'MP3 file downloaded{i}' )
         else:
-            print(f"Failed to retrieve MP3 file{i+1}. Status code:", response.status_code)
+            print( f"Failed -> file{i + 1}file{i+1}. Status code:", response.status_code )
     i += 1
 
 print( 'finished' )
