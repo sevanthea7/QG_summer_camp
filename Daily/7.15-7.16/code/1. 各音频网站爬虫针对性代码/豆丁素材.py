@@ -1,12 +1,13 @@
 import requests
 from bs4 import BeautifulSoup
+import time
 
 headers = {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.138 Safari/537.36',
     }
 
 # 替换对应链接
-response = requests.get('https://v.docin.com/search.do?source_type=2&pid=&nkey=%E4%BA%A4%E8%B0%88%E5%A3%B0', headers=headers)
+response = requests.get('https://stock.zhipianbang.com/sound/search.html?keyword=%E8%A1%97%E9%81%93', headers=headers)
 content = response.text
 soup = BeautifulSoup(content, 'html.parser')
 all_c = soup.findAll( class_='m-showlst-pic')
@@ -32,10 +33,13 @@ for link in link_box:
         if response_f.status_code == 200:
 
             # 指定保存路径
-            with open(f'../test/talk_sound{i}.mp3', 'wb') as file:
+            with open(f'../crowd_sound/crowd_sound{i}.mp3', 'wb') as file:
 
                 file.write( response_f.content )
             print( f'MP3 file downloaded{i}' )
         else:
             print( f"Failed -> file{i + 1}. Status code:", response.status_code )
+        time.sleep(0.8)
     i += 1
+
+print( 'finished' )

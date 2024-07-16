@@ -1,12 +1,13 @@
 from bs4 import BeautifulSoup
 import requests
+import time
 
 headers = {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.138 Safari/537.36',
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:128.0) Gecko/20100101 Firefox/128.0',
     }
 
 # 替换对应链接
-response = requests.get('https://stock.zhipianbang.com/sound/search.html?keyword=%E4%BA%A4%E8%B0%88', headers = headers )
+response = requests.get('https://stock.zhipianbang.com/sound/search.html?keyword=%E8%BD%A6%E6%B5%81', headers = headers )
 
 content = response.text
 soup = BeautifulSoup( content, 'html.parser' )
@@ -34,12 +35,13 @@ for link in link_box:
         if response_f.status_code == 200:
 
             # 指定保存路径
-            with open( f'../test/talk_sound{i}.mp3', 'wb') as file:
+            with open( f'../street_sound/street_sound{i}.mp3', 'wb') as file:
 
                 file.write( response_f.content )
             print( f'MP3 file downloaded{i}' )
         else:
             print( f"Failed -> file{i + 1}file{i+1}. Status code:", response.status_code )
+        time.sleep( 0.8 )
     i += 1
 
 print( 'finished' )

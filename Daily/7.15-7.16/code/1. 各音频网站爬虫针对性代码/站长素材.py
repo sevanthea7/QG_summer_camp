@@ -1,5 +1,6 @@
 from bs4 import BeautifulSoup
 import requests
+import time
 
 headers = {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.138 Safari/537.36',
@@ -38,4 +39,7 @@ for link in link_box:
             print( f'MP3 file downloaded{i}' )
         else:
             print( f"Failed -> file{i + 1}. Status code:", response.status_code )
+        time.sleep(0.8)
     i += 1
+
+print( 'finished' )
