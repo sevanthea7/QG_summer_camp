@@ -1,0 +1,113 @@
+[{
+    "graph_fusion": {
+        "AABiasaddConvFusion": {
+            "effect_times": "0",
+            "match_times": "4"
+        },
+        "AAMatMulNzToNdFusionPass": {
+            "effect_times": "0",
+            "match_times": "1"
+        },
+        "ARefreshCubeC0FusionPass": {
+            "effect_times": "0",
+            "match_times": "23"
+        },
+        "BatchMatMulFusionPass": {
+            "effect_times": "0",
+            "match_times": "4"
+        },
+        "ConvFormatRefreshFusionPass": {
+            "effect_times": "0",
+            "match_times": "19"
+        },
+        "ConvToFullyConnectionFusionPass": {
+            "effect_times": "0",
+            "match_times": "19"
+        },
+        "ConvWeightCompressFusionPass": {
+            "effect_times": "0",
+            "match_times": "23"
+        },
+        "CubeTransFixpipeFusionPass": {
+            "effect_times": "0",
+            "match_times": "1"
+        },
+        "FIXPIPEAPREQUANTFUSIONPASS": {
+            "effect_times": "0",
+            "match_times": "23"
+        },
+        "FIXPIPEFUSIONPASS": {
+            "effect_times": "20",
+            "match_times": "23"
+        },
+        "Globalavgpoolpass": {
+            "effect_times": "1",
+            "match_times": "1"
+        },
+        "MatMulAlignInputsFusionPass": {
+            "effect_times": "0",
+            "match_times": "4"
+        },
+        "MatMulBiasAddFusionPass": {
+            "effect_times": "4",
+            "match_times": "4"
+        },
+        "MatMulTransposeWeightFusionPass": {
+            "effect_times": "0",
+            "match_times": "4"
+        },
+        "MatMulUnsqueezeSqueezeFusionPass": {
+            "effect_times": "0",
+            "match_times": "4"
+        },
+        "MatmulCastFusionPass": {
+            "effect_times": "0",
+            "match_times": "1"
+        },
+        "RefreshInt64ToInt32FusionPass": {
+            "effect_times": "1",
+            "match_times": "1"
+        },
+        "RemoveCastFusionPass": {
+            "effect_times": "0",
+            "match_times": "48"
+        },
+        "SameInputConv2dPass": {
+            "effect_times": "0",
+            "match_times": "11"
+        },
+        "StrideHoistingPass": {
+            "effect_times": "0",
+            "match_times": "12"
+        },
+        "TBEConvAddFusion": {
+            "effect_times": "0",
+            "match_times": "4"
+        },
+        "TransdataCastFusionPass": {
+            "effect_times": "0",
+            "match_times": "27"
+        },
+        "TransdataFz2FzgFusionPass": {
+            "effect_times": "0",
+            "match_times": "3"
+        },
+        "TransdataFzg2FzFusionPass": {
+            "effect_times": "0",
+            "match_times": "3"
+        }
+    },
+    "session_and_graph_id": "0_0",
+    "ub_fusion": {
+        "TbeConvFixPipeFusionPass": {
+            "effect_times": "16",
+            "match_times": "16",
+            "repository_hit_times": "0"
+        },
+        "TbeMatmulFixPipeFusionPass": {
+            "effect_times": "4",
+            "match_times": "4",
+            "repository_hit_times": "0"
+        }
+    }
+}]
