@@ -14,8 +14,6 @@ atc --model=model.onnx --framework=5 --output=model2 --soc_version=Ascend310B4
 
 
 
-
-
 ~~~python
 resnet50_sdk_python_sample
 ├── data

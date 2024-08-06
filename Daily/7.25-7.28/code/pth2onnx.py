@@ -3,6 +3,61 @@ from onnx import numpy_helper
 import torch
 import torch.nn as nn
 
+
+class Net(nn.Module):
+    def __init__(self, num_classes, init_weights):
+        super(Net, self).__init__()
+        self.method = nn.Sequential(
+            nn.Conv2d(3, 48, kernel_size=11, stride=4, padding=2),
+            # in: 3, 224, 224   (224-11+2)/4 + 1 = (为了保证是整数所以选择性删去最后一行) out: 48, 55, 55
+            nn.ReLU(inplace=True),
+            nn.MaxPool2d(kernel_size=3, stride=2),  # (55-3)/2 + 1 = 27     out: 48, 27, 27
+
+            nn.Conv2d(48, 128, kernel_size=5, padding=2),  # out: 128, 27, 27
+            nn.ReLU(inplace=True),
+            nn.MaxPool2d(kernel_size=3, stride=2),  # (27-5+2)/2 + 1 = 13   out: 128, 13, 13
+
+            nn.Conv2d(128, 192, kernel_size=3, padding=1),  # out: 192, 13, 13
+            nn.ReLU(inplace=True),
+
+            nn.Conv2d(192, 192, kernel_size=3, padding=1),  # out: 192, 13, 13
+            nn.ReLU(inplace=True),
+
+            nn.Conv2d(192, 128, kernel_size=3, padding=1),  # out: 128, 13, 13
+            nn.ReLU(inplace=True),
+
+            nn.MaxPool2d(kernel_size=3, stride=2)  # (13-3)/2 +1 = 6       out: 128, 6, 6
+        )
+        self.classifier = nn.Sequential(
+            nn.Dropout(p=0.5),  # 以0.5的概率随机失活节点
+            nn.Linear(128 * 6 * 6, 2048),  # 规定接下来的全连接层有2048个节点
+            nn.ReLU(inplace=True),
+
+            nn.Dropout(p=0.5),  # 全连接层连接之前进行随机失活操作
+            nn.Linear(2048, 2048),
+            nn.ReLU(inplace=True),
+
+            nn.Linear(2048, num_classes),
+        )
+        if init_weights:
+            self._initialize_weights()
+
+    def forward(self, x):
+        x = self.method(x)
+        x = torch.flatten(x, start_dim=1)  # 深度、高度、宽度展平，不改变batch
+        return self.classifier(x)
+
+    def _initialize_weights(self):  # 初始化权重的方法
+        for m in self.modules():
+            if isinstance(m, nn.Conv2d):  # 如果m是卷积层的话，初始化它的权重和偏值
+                nn.init.kaiming_normal_(m.weight, mode='fan_out')
+                if m.bias is not None:
+                    nn.init.constant_(m.bias, 0)
+            elif isinstance(m, nn.Linear):
+                nn.init.normal_(m.weight, 0, 0.01)
+                nn.init.constant_(m.bias, 0)
+
+
 '''
 class Bottleneck(nn.Module):
     def __init__(self, in_channels, mid_channels, out_channels, stride=1):
@@ -102,10 +157,10 @@ class Net(nn.Module):
 '''
 
 
-model = Net()
+model = Net( num_classes = 5, init_weights = True )
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
-pth_path = '../data/725Net_best.pth'
+pth_path = 'D:\[ Worksheet4 ] QG\QG_summer_camp\Daily/7.7-7.11\path\AlexNet_best.pth'
 example = torch.randn( 1, 3, 224, 224 ).to(device)
 
 
@@ -116,8 +171,8 @@ model = model.to(device)
 model.eval()
 
 
-torch.onnx.export(model, example, "../data/Alex_leaf.onnx" )
-model_onnx = onnx.load( "../data/Alex_leaf.onnx" )
+torch.onnx.export(model, example, "../data/Alex_flower.onnx" )
+model_onnx = onnx.load( "../data/Alex_flower.onnx" )
 onnx.checker.check_model(model_onnx)
 print(onnx.helper.printable_graph(model_onnx.graph))
 
