@@ -135,9 +135,12 @@ def update_data( k, n, xL, x, vL, v, b, g, a, t, A, r, rL, turn, r_turn ):
         for i in range( n ):
             s = xp[i] - lp - rL[i]
             for j in range( n ):
-                if i != j:                                          # 当相比较的智能体不是自己时，对应的a不为0，两智能体间的关系参与调整考虑
-                    dot_v[i] -= A[i][j] * ( xp[i] - xp[j] - R[i][j] + b * ( vp[i] - vp[j] ) )
-                dot_v[i] -= k[i] * ( s + g * ( vp[i] - vL ) )  # 与智能体相关联时，与领导者之间的关系参与调整考虑
+                if flagla == 1 and flaglo == 1:
+                    dot_v = np.zeros_like(vp)
+                else:
+                    if i != j:  # 当相比较的智能体不是自己时，对应的a不为0，两智能体间的关系参与调整考虑
+                        dot_v[i] -= A[i][j] * (xp[i] - xp[j] - R[i][j] + b * (vp[i] - vp[j]))
+                dot_v[i] -= k[i] * (s + g * (vp[i] - vL))  # 与智能体相关联时，与领导者之间的关系参与调整考虑
 
         vp += a * dot_v  # 更新车辆速度位置与领导者位置
         xp += a * vp
@@ -199,7 +202,7 @@ def main():
     r_middle =30.0
     r_right = 20.0
     r_turn = 600.0
-    r_gap = 10
+    r_gap = 10.0
     r_turn_before = np.array([ [ r_turn + r_gap, r_left ],
                       [ r_turn, r_middle ],
                       [ r_turn - 3 * r_gap, r_right ] ])
@@ -289,87 +292,6 @@ def main():
     plt.legend()
     plt.show()
 
-    # ani(LposV, MposV, RposV, LposV2, MposV2, RposV2, L, M, R, L2, M2, R2)
-
-    '''
-    lbl = False
-    def get_colors(n):
-        colors = []
-        for i in range(n):
-            c = np.random.rand(3, )
-            colors.append(c)
-        return colors
-    
-    def spaced(posV, space=250):
-        n_posV = []
-        for i in range(0, len(posV), space):
-            n_posV.append(posV[i:i + space])
-        return n_posV
-    
-    def update(frame, ax, Ln_posV, Mn_posV, Rn_posV, L, M, R, colorsL, colorsM, colorsR, trianglesL, trianglesM, trianglesR):
-        global lbl
-        lines = []
-    
-        if not lbl:
-            for i in range(L):
-                ax.plot(Ln_posV[frame][:, i, 0], Ln_posV[frame][:, i, 1], color=colorsL[i], label=f'L Vehicle {i + 1}')
-            for i in range(M):
-                ax.plot(Mn_posV[frame][:, i, 0], Mn_posV[frame][:, i, 1], color=colorsM[i], label=f'M Vehicle {i + 1}')
-            for i in range(R):
-                ax.plot(Rn_posV[frame][:, i, 0], Rn_posV[frame][:, i, 1], color=colorsR[i], label=f'R Vehicle {i + 1}')
-            lbl = True
-            plt.legend()
-    
-        for i in range(L):
-            lV = ax.plot( Ln_posV[frame][:, i, 0], Ln_posV[frame][:, i, 1], color=colorsL[i])
-            lines.extend(lV)
-            trianglesL[i].remove()
-            last = Ln_posV[frame][-1, i]
-            trianglesL[i] = ax.plot(last[0], last[1], marker='>', color=colorsL[i])[0]
-    
-        for i in range(M):
-            lV = ax.plot(Mn_posV[frame][:, i, 0], Mn_posV[frame][:, i, 1], color=colorsM[i])
-            lines.extend(lV)
-            trianglesM[i].remove()
-            last = Mn_posV[frame][-1, i]
-            trianglesM[i] = ax.plot(last[0], last[1], marker='>', color=colorsM[i])[0]
-    
-        for i in range(R):
-            lV = ax.plot(Rn_posV[frame][:, i, 0], Rn_posV[frame][:, i, 1], color=colorsR[i])
-            lines.extend(lV)
-            trianglesR[i].remove()
-            last = Rn_posV[frame][-1, i]
-            trianglesR[i] = ax.plot(last[0], last[1], marker='>', color=colorsR[i])[0]
-    
-        ax.set_ylim(0, max(np.max(Ln_posV[:, :, 1]), np.max(Mn_posV[:, :, 1]), np.max(Rn_posV[:, :, 1])) + 10)
-        ax.set_xlabel('X Position (m)')
-        ax.set_ylabel('Y Position (m)')
-    
-        return lines
-    
-    fig, ax = plt.subplots(figsize=(10, 6))
-    lbl = False
-    
-    
-    Ln_posV = spaced(LposV)
-    Mn_posV = spaced(MposV)
-    Rn_posV = spaced(RposV)
-    
-    colorsL = get_colors(L)
-    colorsM = get_colors(M)
-    colorsR = get_colors(R)
-    
-    
-    trianglesL = [ax.plot([], [], marker='>')[0] for _ in range(L)]
-    trianglesM = [ax.plot([], [], marker='>')[0] for _ in range(M)]
-    trianglesR = [ax.plot([], [], marker='>')[0] for _ in range(R)]
-    
-    ani = FuncAnimation(fig, update, frames=len(Ln_posV), fargs=(ax, Ln_posV, Mn_posV, Rn_posV, L, M, R, colorsL, colorsM, colorsR, trianglesL, trianglesM, trianglesR), interval=5000, blit=True)
-    
-    ani.save('../data/trajectory_TEST.gif', writer='pillow', fps=10)
-    
-    plt.show()
-    '''
 
 
 if __name__ == '__main__':

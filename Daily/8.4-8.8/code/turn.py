@@ -4,17 +4,16 @@ from matplotlib.animation import FuncAnimation
 import tkinter as tk
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
-def update_data(xL, x, vL, v, b, g, a, t, A, r, rL):
+def update_data(xL, x, vL, v, b, g, a, t, A, r, rL, turn ):
     flaglo = 0
     flagla = 0
     cnt = 0
     posV = [x.copy()]  # 用于记录车辆位置更新
     velV = [v.copy()]  # 用于记录车辆速度更新
-
-    xLp = xL.copy()  # 用于放领导者位置，先存入领导者初始位置
+    posL = [xL.copy()]  # 用于放领导者位置，先存入领导者初始位置
     xp = x.copy()  # 用于放车辆位置，先存入车辆初始位置
     vp = v.copy()  # 用于放车辆速度，先存入车辆初始速度
-
+    lp = xL.copy()
     R = np.zeros((n, n, 2))  # 用车辆与领导者之间的理想距离计算车辆之间的相对理想距离
     for i in range(n):
         for j in range(n):
@@ -22,45 +21,62 @@ def update_data(xL, x, vL, v, b, g, a, t, A, r, rL):
 
     while flagla == 0 or flaglo == 0:
         for ts in range(t):
-            dot_v = np.zeros_like(vp)  # 领导者速度不变，所有加速度为0
+            dot_v = np.zeros_like( vp )                                 # 领导者速度不变，所有加速度为0
             for i in range(n):
-                s = xp[i] - xLp - rL[i]
+                s = xp[i] - lp - rL[i]
                 for j in range(n):
-                    if i != j:  # 当相比较的智能体不是自己时，对应的a不为0，两智能体间的关系参与调整考虑
+                    '''
+                    if i != j:                                          # 当相比较的智能体不是自己时，对应的a不为0，两智能体间的关系参与调整考虑
                         dot_v[i] -= A[i][j] * (xp[i] - xp[j] - R[i][j] + b * (vp[i] - vp[j]))
-                dot_v[i] -= k[i] * (s + g * (vp[i] - vL))  # 与智能体相关联时，与领导者之间的关系参与调整考虑
+                    dot_v[i] -= k[i] * (s + g * (vp[i] - vL))  # 与智能体相关联时，与领导者之间的关系参与调整考虑'''
+                    if (not ( flagla == 1 and flaglo == 1 )):
+                        if i != j:                                       # 当相比较的智能体不是自己时，对应的a不为0，两智能体间的关系参与调整考虑
+                            dot_v[i] -= A[i][j] * (xp[i] - xp[j] - R[i][j] + b * (vp[i] - vp[j]))
+                    dot_v[i] -= k[i] * (s + g * (vp[i] - vL))            # 与智能体相关联时，与领导者之间的关系参与调整考虑
+
 
             vp += a * dot_v  # 更新车辆速度位置与领导者位置
             xp += a * vp
-            xLp += a * vL
-
-            if cnt == 500 or ts == t - 1:
-                if flagla == 0 and np.max(np.abs(xp[:,1] - posV[-500][:,1]) ) < 0.02 and np.max(np.abs(vp[:,1] - velV[-500][:,1]) ) < 0.02:
-                    flagla = 1
-                    ok_la = ts * a
-                if flaglo == 0 and abs(r - np.mean(np.abs(np.diff(xp[:, 0])))) < 0.05 and np.max(
-                        np.abs(vp[:, 0] - velV[-500][:, 0])) < 0.02:
-                    flaglo = 1
-                    ok_lo = ts * a
-                cnt = 0
+            lp += a * vL
+            if turn == 0:
+                if cnt == 500 or ts == t - 1:
+                    if flagla == 0 and np.max(np.abs(xp[:,1] - posV[-500][:,1]) ) < 0.02 and np.max(np.abs(vp[:,1] - velV[-500][:,1]) ) < 0.02:
+                        flagla = 1
+                        ok_la = ts * a
+                    if flaglo == 0 and abs(r - np.mean(np.abs(np.diff(xp[:, 0])))) < 0.05 and np.max(np.abs(vp[:, 0] - velV[-500][:, 0])) < 0.02:
+                        flaglo = 1
+                        ok_lo = ts * a
+                    cnt = 0
+                else:
+                    cnt += 1
             else:
-                cnt += 1
+                if cnt == 500 or ts == t - 1:
+                    if flagla == 0 and np.max(np.abs(xp[:, 0] - posV[-500][:, 0])) < 0.02 and np.max(np.abs(vp[:, 0] - velV[-500][:, 0])) < 0.02:
+                        flagla = 1
+                        ok_la = ts * a
+                    if flaglo == 0 and abs(r - np.mean(np.abs(np.diff(xp[:, 1])))) < 0.05 and np.max(np.abs(vp[:, 1] - velV[-500][:, 1])) < 0.02:
+                        flaglo = 1
+                        ok_lo = ts * a
+                    cnt = 0
+                else:
+                    cnt += 1
             posV.append(xp.copy())
             velV.append(vp.copy())
-            if flagla == 1 and flaglo == 1:
-                break
+            posL.append(lp.copy())
+
+
         if flagla == 0 or flaglo == 0:
             t += t
 
     posV = np.array(posV)
     velV = np.array(velV)
-
-    return posV, velV, ok_lo, ok_la, t
+    posL = np.array(posL)
+    return posV, velV, posL, ok_lo, ok_la, t
 
 
 def get_data():
     r = 0
-    name = input( "\n推荐文件:\n1.  ../data/test3.txt  4辆车，间距5\n2.  ../data/test4.txt  6辆车，间距6\n请输入导入文件的文件名：" )
+    name = input( "../data/test3.txt  4辆车，间距5\n../data/test4.txt  6辆车，间距6\n请输入导入文件的文件名：" )
     with open( name, 'r' ) as file:
         info = file.readlines()
     n = len( info ) - 1
@@ -83,9 +99,9 @@ def get_data():
             v.append( vp )
     for i in range( n ):
         if i == 0:
-            rL.append( [0.0, 0.0] )
+            rL.append( [5.0, 0.0] )
         r += rr
-        rL.append( [ -1 * r, 0.0 ] )
+        rL.append( [ -1 * r + 5, 0.0 ] )
 
     x = np.array( x )
     v = np.array( v )
@@ -128,14 +144,31 @@ xL = np.array( [ float( np.max( x[ :, 0 ] )), float( round( np.mean( x[ :, 1 ] )
 vL = np.array( [ float( round( np.mean( v[ :, 0 ] ), 1 )), 0.0 ] )
 A, x, v, rL = createA( n, x, v, rL )
 k = np.zeros( ( n, 1 ) )
-# dd = np.mean( np.diff( x[ :, 1 ] ) )
-dd = 5
+dd = np.mean( np.diff( x[ :, 1 ] ) )
 if dd == 0:
     dd = 1
 k[0] = abs(round( ( x[ 0, 1 ] - xL[1] )/dd, 1 ))
+print( k[0])
 k[1] = abs(round( ( x[ 1, 1 ] - xL[1] )/dd, 1 ))
 A = adjustA( A, x, n, dd )
-posV, velV, ok_lo, ok_la, t = update_data( xL, x, vL, v, b, g, a, t, A, r, rL )
+# print( xL, x, vL, v, b, g, a, t, A, r, rL )
+posV, velV, posL, ok_lo, ok_la, nt = update_data( xL, x, vL, v, b, g, a, t, A, r, rL, turn = 0 )
+
+xL = posL[-1]
+x = posV[-1]
+v = velV[-1]
+# print( vL, rL )
+
+vL[0], vL[1] = vL[1], vL[0]
+vL = -vL
+rL[ :, [0, 1] ] = rL[ :, [1, 0] ]
+rL = -rL
+# print( xL, x, vL, v, b, g, a, t, A, r, rL )
+nposV, nvelV, nposL, nok_lo, nok_la, nnt = update_data( xL, x, vL, v, b, g, a, t, A, r, rL, turn = 1 )
+
+posV = np.concatenate( (posV, nposV), axis = 0 )
+velV = np.concatenate( (velV, nvelV), axis = 0 )
+
 
 
 plt.figure( figsize=(10, 6) )
@@ -201,5 +234,6 @@ colors = get_colors( n )
 ani = FuncAnimation( fig, update, frames=len( n_posV ), fargs=( ax, n_posV, n, colors ), interval=5000, blit=True )
 
 fname  = str( n ) + '_cars'
-ani.save( '../data/'+fname+ '_trajectory_basic1.gif', writer='pillow', fps=10 )
+ani.save( '../data/'+fname+ '_trajectory.gif', writer='pillow', fps=10 )
 plt.show()
+
